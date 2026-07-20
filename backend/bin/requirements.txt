@@ -1,0 +1,6 @@
+# Python requirements for LIYA Local Face Swap Module
+opencv-python
+onnxruntime
+insightface
+numpy
+gdown
