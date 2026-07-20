@@ -5,7 +5,7 @@ import axios from 'axios';
  * Communication via backend filesystem API.
  */
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
-const BLACKBOARD_FILE = '../project_blackboard.md';
+const BLACKBOARD_FILE = '../brain/project_blackboard.md';
 
 export const readBlackboard = async () => {
     try {

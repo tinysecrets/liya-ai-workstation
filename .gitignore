@@ -38,4 +38,5 @@ brain/memories.json
 scratch/
 # Large Model Files (GitHub limit is 100MB)
 *.onnx
+*.zip
 face_swap_models_backup/
