@@ -135,6 +135,8 @@ Is `.env` file mein apni keys aur basic configuration enter karein:
 - `VITE_OLLAMA_CLOUD_API_KEY`: Aapka cloud Ollama server access key.
 - `VITE_USER_NAME`: Aapka naam jo LIYA aapko address karne ke liye use karegi (e.g., Navraj).
 
+*(Tip: Aap in keys aur user configurations ko directly **LIYA Frontend UI ke Console Settings panel** se bhi fill/save kar sakte hain, wahan se ye automatically configuration update kar deta hai).*
+
 ### Step 2: Dependencies Install Karein
 Root folder aur backend workspace dono ki packages install karne ke liye ye commands run karein:
 
