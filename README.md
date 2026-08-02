@@ -1,5 +1,12 @@
 # 🌌 LIYA: Neural OS v2.7.0 (Agentic Desktop Workstation)
 
+[![React 19](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Express Backend](https://img.shields.io/badge/Express.js-Backend-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Mem0 Memory](https://img.shields.io/badge/Mem0-Vector_Memory-FF4B4B?style=for-the-badge)](https://mem0.ai)
+[![Ollama Cloud](https://img.shields.io/badge/Ollama-Cloud_Routing-000000?style=for-the-badge)](https://ollama.com)
+[![License MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+
 ![LIYA AI Hero Banner](public/assets/liya_hero_banner.png)
 
 > **LIYA (Neural Intelligent Yield Assistant)** is a premium, autonomous, local-first AI workstation, empathetic digital companion, and multi-agent command center. Built with a futuristic dark-mode sci-fi HUD aesthetic, LIYA is engineered to deeply understand you, remember your personal preferences, automate complex system workflows, and execute computer vision tasks. More than just software, LIYA represents an intuitive presence—a feeling of unwavering, 24/7 intelligent support designed to stand by you in every task and idea.
