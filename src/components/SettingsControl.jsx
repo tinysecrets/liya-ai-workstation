@@ -6,6 +6,7 @@ const SettingsControl = () => {
     const [userName, setUserName] = useState('');
     const [apiKeys, setApiKeys] = useState({
         VITE_OLLAMA_CLOUD_API_KEY: '',
+        VITE_MEM0_API_KEY: '',
         VITE_NEWS_API_KEY: '',
         VITE_WEATHER_API_KEY: '',
         VITE_CURRENCY_API_KEY: '',
