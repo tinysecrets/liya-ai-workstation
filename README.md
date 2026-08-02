@@ -125,88 +125,107 @@ LIYA has a built-in agent ecosystem designed to coordinate, write code, run rese
 
 ---
 
-## 🚀 Quick Setup & Installation Guide
+## 🛠️ Complete Installation & Setup Guide
 
-Follow these steps in order to get LIYA up and running on your machine:
+Follow this detailed step-by-step guide to install and configure LIYA on any local machine (Windows / macOS / Linux):
 
 ---
 
-### 📋 Prerequisites (External System Requirements)
+### 📋 Phase 1: System Prerequisites Check
 
 > [!IMPORTANT]
-> These global system tools must be installed on your machine manually before running LIYA:
+> Ensure the following global tools are installed on your operating system before proceeding:
 
-| Prerequisite | Version Required | Purpose | Verification Command |
+| Tool | Recommended Version | Download Link | Verification Command |
 | :--- | :--- | :--- | :--- |
-| **🟢 Node.js** | `v18.x` or `v20+` | React 19 Frontend & Express Backend Runtime | `node -v` |
-| **🐍 Python** | `v3.10+` | Computer Vision & FaceSwap Pipelines | `python --version` |
-| **🎬 FFmpeg** | Latest (in PATH) | Video Swap Audio Muxing & Encoding | `ffmpeg -version` |
+| **🟢 Node.js** | `v18.x` or `v20+` | [nodejs.org](https://nodejs.org/) | `node -v` & `npm -v` |
+| **🐍 Python** | `v3.10+` / `v3.11` / `v3.13` | [python.org](https://www.python.org/) | `python --version` & `pip --version` |
+| **🎬 FFmpeg** | Latest (added to PATH) | [ffmpeg.org](https://ffmpeg.org/) | `ffmpeg -version` |
+| **🐙 Git** | Latest | [git-scm.com](https://git-scm.com/) | `git --version` |
 
 ---
 
-### 🛠️ Step-by-Step Installation
+### 📦 Phase 2: Repository & Dependency Setup
 
-#### Step 1: Environment & API Key Configuration
-You can configure your API keys (Ollama Cloud, Mem0 Cloud, Weather, News, Currency, Pexels) using **either** of the following methods:
+#### Step 1: Clone Repository
+Open your terminal and clone the LIYA repository:
+```bash
+git clone https://github.com/hackertech142/Liya-adavnce-ai-asistant.git
+cd Liya-adavnce-ai-asistant
+```
 
-- **Method A: Web UI Console Settings (Recommended)**: 
-  Launch LIYA and navigate to **Console Settings** (`SettingsControl.jsx`). Paste your API keys into the dedicated fields and click **SAVE CHANGES**. Credentials sync instantly at runtime without needing a server restart!
+#### Step 2: Environment Configuration
+Copy the template `.env.example` file to create your local `.env`:
+```bash
+# Windows PowerShell / Linux / macOS
+cp .env.example .env
+```
 
-- **Method B: Manual `.env` File Configuration**: 
-  Copy `.env.example` to `.env` and add your keys manually:
-  ```bash
-  cp .env.example .env
-  ```
-  Edit `.env` in any text editor:
-  ```env
-  VITE_OLLAMA_CLOUD_API_KEY=your_ollama_key_here
-  VITE_MEM0_API_KEY=your_mem0_key_here
-  VITE_USER_NAME=YourName
-  ```
+> [!TIP]
+> **API Key Setup Options**:
+> - **Method A (Web UI - Recommended)**: Launch LIYA and configure all API keys (`VITE_OLLAMA_CLOUD_API_KEY`, `VITE_MEM0_API_KEY`, Weather, News, Pexels, Currency) directly inside **Console Settings** (`SettingsControl.jsx`). Changes sync dynamically without restarting.
+> - **Method B (Manual `.env`)**: Open `.env` in any text editor and add your keys:
+>   ```env
+>   VITE_OLLAMA_CLOUD_API_KEY=your_ollama_cloud_key
+>   VITE_MEM0_API_KEY=your_mem0_cloud_key
+>   VITE_USER_NAME=Navraj
+>   ```
 
-#### Step 2: Install Python ML Dependencies
-Install required computer vision & face processing libraries:
+#### Step 3: Install Node.js Dependencies
+Install packages for both the React 19 Frontend Workstation and the Express Backend Server:
+```bash
+# 1. Install root frontend dependencies
+npm install
+
+# 2. Install backend Express server dependencies
+npm install --prefix backend
+```
+
+#### Step 4: Install Python ML Libraries (FaceSwap Pipeline)
+Install required computer vision, PyTorch/ONNX, and image processing libraries:
 ```bash
 pip install -r backend/bin/requirements.txt
 ```
 
-#### Step 3: Install Node.js Dependencies
-Install packages for both the Frontend Workstation and the Express Backend:
-```bash
-# 1. Frontend dependencies
-npm install
-
-# 2. Backend dependencies
-npm install --prefix backend
-```
-
-#### Step 4: Setup Stealth Browser Engine
-Install Chromium browser binaries for Playwright web crawling:
+#### Step 5: Setup Playwright Stealth Browsers
+Install Playwright Chromium browser binaries for background web crawling and screenshot scraping:
 ```bash
 npx playwright install chromium --with-deps
 ```
 
+#### Step 6: Verify FaceSwap ONNX Model
+Ensure `inswapper_128.onnx` model is present inside `backend/bin/`:
+- If missing, download `inswapper_128.onnx` and place it at `backend/bin/inswapper_128.onnx`.
+
 ---
 
-### ⚡ Launching LIYA Workstation
+### ⚡ Phase 3: Launching LIYA Workstation
 
-#### Option A: 1-Click Windows Launcher (Recommended)
-Simply double-click the included batch launcher:
+#### Method 1: 1-Click Windows Launcher (Recommended)
+Simply double-click **`Start_LIYA_AI.bat`** in the root directory:
 ```text
-Start_LIYA_AI.bat
+Double-click: Start_LIYA_AI.bat
 ```
-*It will automatically spin up the Backend Server, start the Frontend Workstation, and launch `http://localhost:5173` in your default browser.*
+*It automatically spins up the Express Backend Server, starts the Vite React Frontend Workstation, and opens `http://localhost:5173` in your default browser.*
 
-#### Option B: Manual Command-Line Startup
-Run the unified startup script from the root directory:
+#### Method 2: Manual Terminal Startup
+Run the unified npm startup command from the root directory:
 ```bash
 npm start
 ```
 
-| Service | Local URL |
-| :--- | :--- |
-| **🖥️ Frontend Interface** | [http://localhost:5173](http://localhost:5173) |
-| **⚙️ Express Backend API** | [http://localhost:3000](http://localhost:3000) |
+| Service Layer | Local URL | Port |
+| :--- | :--- | :--- |
+| **🖥️ React 19 Frontend Workstation** | [http://localhost:5173](http://localhost:5173) | `5173` |
+| **⚙️ Express Backend Control Engine** | [http://localhost:3000](http://localhost:3000) | `3000` |
+
+---
+
+### 🔧 Troubleshooting & Tips
+
+- **Port in Use Error**: If port `3000` or `5173` is busy, kill existing node processes using `taskkill /F /IM node.exe` (Windows) or `pkill -f node` (Linux/macOS).
+- **FFmpeg Not Found**: Ensure `ffmpeg` is added to your OS Environment Variables PATH so `videoswap.py` can render output audio tracks.
+- **Mem0 Cloud Connection**: If `VITE_MEM0_API_KEY` is not provided, LIYA gracefully operates in **Local Memory Fallback Mode** (`localStorage`).
 
 ---
 
