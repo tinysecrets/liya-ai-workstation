@@ -1246,7 +1246,26 @@ app.get('/api/faceswap/history', async (req, res) => {
     }
 });
 
+app.delete('/api/faceswap/history', async (req, res) => {
+    try {
+        const swappedDir = path.resolve(__dirname, '../public/swapped');
+        if (await fs.pathExists(swappedDir)) {
+            const files = await fs.readdir(swappedDir);
+            for (const file of files) {
+                if (file !== '.gitkeep') {
+                    await fs.remove(path.join(swappedDir, file)).catch(() => {});
+                }
+            }
+        }
+        res.json({ success: true, message: 'All FaceSwap history & crops cleared successfully.' });
+    } catch (e) {
+        console.error("[FaceSwap History DELETE ALL Error]:", e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
 app.delete('/api/faceswap/history/:filename', async (req, res) => {
+
     try {
         const { filename } = req.params;
         if (filename.includes('/') || filename.includes('\\') || filename.includes('..')) {
