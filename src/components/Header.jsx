@@ -23,8 +23,9 @@ const Header = ({
                 
                 {/* Minimal Model Selector (ChatGPT Style) */}
                 <div className="flex items-center gap-2">
-                    <button className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 rounded-lg transition-colors text-gray-700 font-semibold text-[15px]">
-                        <span>LIYA AI</span>
+                    <button className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 rounded-lg transition-colors text-gray-800 font-bold text-[15px]">
+                        <img src="/liya_logo.png" alt="LIYA" className="w-6 h-6 rounded-lg object-cover shadow-sm ring-1 ring-black/10" />
+                        <span className="font-extrabold tracking-wide">LIYA AI</span>
                         <ChevronDown size={16} className="text-gray-400" />
                     </button>
                 </div>

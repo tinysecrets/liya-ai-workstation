@@ -137,10 +137,12 @@ const Sidebar = ({
                             onClick={() => setActiveModule('home')}
                             className="flex items-center gap-2.5 rounded-xl hover:bg-gray-200/60 transition-all p-1 text-gray-800 font-semibold text-sm group"
                         >
-                            <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
-                                <Sparkles size={14} className="text-white drop-shadow" />
-                            </div>
-                            <span className="font-bold tracking-wider text-slate-900 font-mono">LIYA AI</span>
+                            <img 
+                                src="/liya_logo.png" 
+                                alt="LIYA Logo" 
+                                className="w-8 h-8 rounded-xl object-cover shadow-sm ring-1 ring-slate-900/10 group-hover:scale-105 transition-transform" 
+                            />
+                            <span className="font-extrabold tracking-wider text-slate-900 font-mono text-sm">LIYA AI</span>
                         </button>
                    )}
                    <button
@@ -217,12 +219,14 @@ const Sidebar = ({
                         className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-[#ececec] transition-colors text-left text-gray-800 group"
                         title="LIYA AI System Settings"
                     >
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 flex items-center justify-center text-white shadow-md shrink-0 group-hover:scale-105 transition-transform">
-                            <Sparkles size={18} className="text-white drop-shadow" />
-                        </div>
+                        <img 
+                            src="/liya_logo.png" 
+                            alt="LIYA Logo" 
+                            className="w-9 h-9 rounded-xl object-cover shadow-md shrink-0 ring-1 ring-slate-900/10 group-hover:scale-105 transition-transform" 
+                        />
                         {!isPicoMode && (
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-bold text-slate-900 truncate tracking-tight">LIYA AI</p>
+                                <p className="text-sm font-extrabold text-slate-900 truncate tracking-tight">LIYA AI</p>
                                 <p className="text-[11px] font-medium text-indigo-600 flex items-center gap-1.5">
                                     <span className="relative flex h-2 w-2">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
