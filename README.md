@@ -135,13 +135,23 @@ Follow these steps in order to get LIYA up and running on your machine:
 
 ### 🛠️ Step-by-Step Installation
 
-#### Step 1: Environment Configuration
-Copy the sample environment file and configure your initial settings:
-```bash
-cp .env.example .env
-```
-> [!TIP]
-> You can also configure API keys dynamically at runtime directly inside **LIYA Console Settings** in the UI!
+#### Step 1: Environment & API Key Configuration
+You can configure your API keys (Ollama Cloud, Mem0 Cloud, Weather, News, Currency, Pexels) using **either** of the following methods:
+
+- **Method A: Web UI Console Settings (Recommended)**: 
+  Launch LIYA and navigate to **Console Settings** (`SettingsControl.jsx`). Paste your API keys into the dedicated fields and click **SAVE CHANGES**. Credentials sync instantly at runtime without needing a server restart!
+
+- **Method B: Manual `.env` File Configuration**: 
+  Copy `.env.example` to `.env` and add your keys manually:
+  ```bash
+  cp .env.example .env
+  ```
+  Edit `.env` in any text editor:
+  ```env
+  VITE_OLLAMA_CLOUD_API_KEY=your_ollama_key_here
+  VITE_MEM0_API_KEY=your_mem0_key_here
+  VITE_USER_NAME=YourName
+  ```
 
 #### Step 2: Install Python ML Dependencies
 Install required computer vision & face processing libraries:
