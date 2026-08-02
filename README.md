@@ -140,12 +140,10 @@ npm install --prefix backend
 npx playwright install chromium --with-deps
 ```
 
-### ⚡ Quick Start: Smart 1-Click Automated Launcher (`Start_LIYA_AI.bat`)
+### ⚡ Quick Start: 1-Click Automated Launcher (`Start_LIYA_AI.bat`)
 Windows users can launch the complete LIYA AI Workstation in a single click:
 - Simply double-click **`Start_LIYA_AI.bat`** in the project root folder.
-- **Smart Auto-Setup**: It automatically checks for missing `.env` files and creates them from `.env.example`.
-- **Auto-Dependency Installation**: If `node_modules` are missing on a fresh system, it automatically runs `npm install` for both Frontend and Backend workspaces before starting!
-- **Zero Configuration Required**: Launches both servers and opens `http://localhost:5173` directly in your default web browser!
+- It automatically initializes the **Express Backend Server** (`c:\liya\backend`), starts the **React Frontend Server** (`c:\liya`), waits for initialization, and launches `http://localhost:5173` directly in your default web browser!
 
 ### Step 4: Manual Command-Line Startup
 If starting manually via terminal:
