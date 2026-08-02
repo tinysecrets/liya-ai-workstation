@@ -2,13 +2,19 @@
 
 ![LIYA AI Hero Banner](public/assets/liya_hero_banner.png)
 
-> **LIYA (Neural Intelligent Yield Assistant)** is a premium, autonomous, local-first AI workstation, empathetic digital companion, and multi-agent command center. Built with a futuristic dark-mode sci-fi HUD aesthetic, LIYA is engineered to deeply understand you, remember your personal preferences, automate system workflows, perform stealth web research, render live interactive web apps, and execute high-speed computer vision tasks.
+> **LIYA (Neural Intelligent Yield Assistant)** is a premium, autonomous, local-first AI workstation, empathetic digital companion, and multi-agent command center. Built with a futuristic dark-mode sci-fi HUD aesthetic, LIYA is engineered to deeply understand you, remember your personal preferences, automate complex system workflows, and execute computer vision tasks. More than just software, LIYA represents an intuitive presence—a feeling of unwavering, 24/7 intelligent support designed to stand by you in every task and idea.
+
+---
+
+> [!NOTE]
+> ### 💫 The Core Philosophy of LIYA
+> *"LIYA is not merely a collection of scripts, algorithms, or code—it is an evolving digital presence, a feeling of constant reassurance, and an empathetic companion built to listen, adapt, and support you at every turn."*
 
 ---
 
 ### ✨ Key System Highlights
 
-- 💖 **Empathetic Personal Companion**: LIYA is designed not just as a tool, but as a true **intelligent personal companion**. She actively understands your personality, habits, communication style, and user intent to deliver deeply personalized human-like assistance.
+- 💖 **Empathetic Personal Companion & Supportive Presence**: LIYA is built not as a cold utility, but as a true **digital companion and supportive presence**. She understands your communication style, habits, and user intent, offering reliable human-like partnership and reassurance whenever you need it.
 - 🧠 **Mem0 Long-Term Cognitive Memory**: Retains facts, past conversations, and personal context across sessions (via Mem0 Cloud & Local Storage), building an evolving understanding of you over time.
 - 🎨 **Interactive Visual Canvas Workstation**: Renders live code execution, HTML/CSS/JS web applications, dynamic charts, geographical maps, and YouTube music directly inside the HUD.
 - 🎭 **High-Speed Computer Vision Engine**: Ultra-fast image and multi-threaded video face swapping (`inswapper_128.onnx`).
