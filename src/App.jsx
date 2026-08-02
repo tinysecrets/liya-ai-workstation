@@ -37,6 +37,7 @@ import { speakText, stopSpeech } from './utils/speechUtils';
 import { clearBlackboard } from './utils/agents/blackboard';
 import { getAllSessions, saveSession, deleteSessionFromDB, getStorageStats, clearAllSessions } from './utils/db';
 import { config } from './utils/config';
+import { memoryManager } from './utils/MemoryManager';
 
 function App() {
   /* Mood State: Default Cyan */
@@ -1048,6 +1049,18 @@ function App() {
         if (currentSessionIdRef.current !== activeSessionAtStart) return;
         setAiState('idle');
         syncActiveSessionToDB(); // Sync on done
+
+        // --- AUTOMATIC MEM0 MEMORY INGESTION ---
+        if (promptToUse && promptToUse.trim()) {
+          memoryManager.add([
+            { role: 'user', content: promptToUse },
+            { role: 'assistant', content: accumulatedResponse || 'Responded to query.' }
+          ]).then(res => {
+            console.log('[Mem0] Automatic Memory Ingestion Completed:', res);
+          }).catch(err => {
+            console.warn('[Mem0] Memory Ingestion Passive Error:', err);
+          });
+        }
 
         // --- AUTOMATIC CANVAS CONTENT HARVESTER ---
         const htmlMatch = accumulatedResponse.match(/```(?:html|xml)?\s*([\s\S]*?(?:<!DOCTYPE html|<html|<svg)[\s\S]*?)(?:```|<\/html>|<\/svg>|$)/i);

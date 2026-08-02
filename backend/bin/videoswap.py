@@ -7,13 +7,35 @@ import cv2
 import numpy as np
 import insightface
 from insightface.app import FaceAnalysis
+from concurrent.futures import ThreadPoolExecutor
 
 def compute_similarity(emb1, emb2):
     """Compute cosine similarity between two normalized embeddings"""
     return np.dot(emb1, emb2)
 
+def process_single_frame(frame, app, swapper, active_mappings):
+    """Process a single frame for face swapping"""
+    try:
+        faces = app.get(frame)
+        if faces:
+            for detected_face in faces:
+                best_match = None
+                highest_sim = -1.0
+
+                for mapping in active_mappings:
+                    sim = compute_similarity(detected_face.normed_embedding, mapping["ref_embedding"])
+                    if sim > highest_sim:
+                        highest_sim = sim
+                        best_match = mapping
+
+                if highest_sim > 0.6 and best_match is not None:
+                    frame = swapper.get(frame, detected_face, best_match["source_face"], paste_back=True)
+    except Exception as e:
+        print(f"[WARNING] Error processing frame: {e}", file=sys.stderr, flush=True)
+    return frame
+
 def main():
-    parser = argparse.ArgumentParser(description="LIYA Video Multi-Face Swap Processor")
+    parser = argparse.ArgumentParser(description="LIYA High-Speed Video Multi-Face Swap Processor")
     parser.add_argument("--target", required=True, help="Path to input target video")
     parser.add_argument("--output", required=True, help="Path to save swapped output video")
     parser.add_argument("--mappings", required=True, help="JSON string or file path containing face mappings: target_index -> source_image_path")
@@ -32,10 +54,10 @@ def main():
         print("[ERROR] inswapper_128.onnx model is missing. Please download it or run image swap first.", file=sys.stderr, flush=True)
         sys.exit(1)
 
-    print("[INFO] Initializing Face Analysis models...", flush=True)
+    print("[INFO] Initializing High-Speed Face Analysis models...", flush=True)
     try:
         app = FaceAnalysis(name='buffalo_l', providers=['CPUExecutionProvider'])
-        app.prepare(ctx_id=0, det_size=(640, 640))
+        app.prepare(ctx_id=0, det_size=(320, 320))
     except Exception as e:
         print(f"[ERROR] Failed to initialize FaceAnalysis: {e}", file=sys.stderr, flush=True)
         sys.exit(1)
@@ -68,11 +90,13 @@ def main():
             sys.exit(1)
 
         fps = cap.get(cv2.CAP_PROP_FPS)
+        if fps <= 0 or np.isnan(fps):
+            fps = 25.0
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-        print(f"[INFO] Video Properties: {width}x{height} @ {fps} FPS. Total frames: {total_frames}", flush=True)
+        print(f"[INFO] Video Properties: {width}x{height} @ {fps:.2f} FPS. Total frames: {total_frames}", flush=True)
 
         # Read first frame to extract reference target faces
         ret, first_frame = cap.read()
@@ -162,43 +186,41 @@ def main():
             os.makedirs(output_dir, exist_ok=True)
         temp_silent_path = os.path.join(output_dir, f"temp_silent_{int(os.path.basename(args.output).split('_')[-1].split('.')[0]) if '_' in args.output else 'silent'}.mp4")
 
-        # Initialize VideoWriter (mp4v is widely supported)
+        # Initialize VideoWriter (mp4v codec)
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         out = cv2.VideoWriter(temp_silent_path, fourcc, fps, (width, height))
 
-        print("[INFO] Processing frames frame-by-frame...", flush=True)
-        frame_count = 0
+        print("[INFO] Processing video frames with parallel multi-threading...", flush=True)
+
+        num_workers = min(4, os.cpu_count() or 4)
+        batch_size = num_workers * 2
+        processed_frames_count = 0
 
         while True:
-            ret, frame = cap.read()
-            if not ret:
+            batch_frames = []
+            for _ in range(batch_size):
+                ret, frame = cap.read()
+                if not ret:
+                    break
+                batch_frames.append(frame)
+
+            if not batch_frames:
                 break
 
-            # Detect faces in current frame
-            faces = app.get(frame)
-            if faces:
-                for detected_face in faces:
-                    # Compare with all active reference embeddings
-                    best_match = None
-                    highest_sim = -1.0
+            # Process current batch in parallel across CPU cores
+            with ThreadPoolExecutor(max_workers=num_workers) as executor:
+                processed_batch = list(executor.map(
+                    lambda f: process_single_frame(f, app, swapper, active_mappings),
+                    batch_frames
+                ))
 
-                    for mapping in active_mappings:
-                        sim = compute_similarity(detected_face.normed_embedding, mapping["ref_embedding"])
-                        if sim > highest_sim:
-                            highest_sim = sim
-                            best_match = mapping
+            # Write processed frames sequentially to video output
+            for proc_frame in processed_batch:
+                out.write(proc_frame)
 
-                    # Face similarity threshold threshold = 0.6
-                    if highest_sim > 0.6 and best_match is not None:
-                        frame = swapper.get(frame, detected_face, best_match["source_face"], paste_back=True)
-
-            # Write frame to silent video
-            out.write(frame)
-
-            frame_count += 1
-            if frame_count % 10 == 0 or frame_count == total_frames:
-                percent = min(100, (frame_count * 100) // total_frames)
-                print(f"[PROGRESS] Frame {frame_count}/{total_frames} processed ({percent}%)", flush=True)
+            processed_frames_count += len(batch_frames)
+            percent = min(100, (processed_frames_count * 100) // (total_frames if total_frames > 0 else 1))
+            print(f"[PROGRESS] Frame {processed_frames_count}/{total_frames} processed ({percent}%)", flush=True)
 
         # Release resources
         cap.release()
@@ -207,7 +229,6 @@ def main():
         is_gif_output = args.output.lower().endswith('.gif')
         if is_gif_output:
             print("[INFO] Target is GIF. Converting silent video frames to high-quality GIF...", flush=True)
-            # Use high quality palettegen/paletteuse filters for optimized GIF export
             cmd = [
                 "ffmpeg", "-y",
                 "-i", temp_silent_path,
@@ -215,13 +236,13 @@ def main():
                 args.output
             ]
         else:
-            print("[INFO] Merging audio track and encoding to browser-playable H.264 using FFmpeg...", flush=True)
+            print("[INFO] Merging audio track and encoding H.264 video with FFmpeg...", flush=True)
             cmd = [
                 "ffmpeg", "-y",
                 "-i", temp_silent_path,
                 "-i", args.target,
-                "-c:v", "libx264",
-                "-c:a", "aac",
+                "-c:v", "libx264", "-preset", "ultrafast", "-crf", "23",
+                "-c:a", "aac", "-b:a", "128k",
                 "-map", "0:v:0",
                 "-map", "1:a:0?",
                 "-shortest",
@@ -230,7 +251,7 @@ def main():
 
         try:
             subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            print("[SUCCESS] Video face swap completed successfully!", flush=True)
+            print("[SUCCESS] High-speed video face swap completed successfully!", flush=True)
         except subprocess.CalledProcessError as err:
             print(f"[ERROR] FFmpeg audio muxing failed: {err.stderr.decode()}", file=sys.stderr, flush=True)
             try:

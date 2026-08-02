@@ -30,6 +30,8 @@ app.use(cors({
 app.use(morgan('dev'));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use('/swapped', express.static(path.resolve(__dirname, '../public/swapped')));
+app.use(express.static(path.resolve(__dirname, '../public')));
 
 // Global API Key Interceptor for Background Tasks
 app.use((req, res, next) => {
@@ -105,7 +107,7 @@ async function scrapeDuckDuckGoImages(query) {
         // Step 2: Fetch images JSON from DuckDuckGo's private endpoint
         const url = `https://duckduckgo.com/i.js?q=${encodeURIComponent(query)}&o=json&vqd=${vqd}&f=,,,`;
         const res = await axios.get(url, {
-            headers: { 
+            headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Referer': 'https://duckduckgo.com/'
             }
@@ -118,7 +120,30 @@ async function scrapeDuckDuckGoImages(query) {
     }
 }
 
-// Web Image Scraper Endpoint (Google-This with DuckDuckGo Fallback)
+// Helper: Wikimedia Commons Image Search
+async function searchWikimediaImages(query) {
+    try {
+        const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch=${encodeURIComponent(query)}&gsrlimit=5&prop=imageinfo&iiprop=url&format=json`;
+        const res = await axios.get(url, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+            timeout: 8000
+        });
+        const pages = res.data?.query?.pages || {};
+        const imgUrls = [];
+        for (const key in pages) {
+            const info = pages[key]?.imageinfo?.[0];
+            if (info?.url && /\.(jpg|jpeg|png|webp|svg)/i.test(info.url)) {
+                imgUrls.push(info.url);
+            }
+        }
+        return imgUrls;
+    } catch (e) {
+        console.warn("[Wikimedia Image Search] Failed:", e.message);
+        return [];
+    }
+}
+
+// Web Image Scraper Endpoint (Google-This with Wikimedia & DuckDuckGo Fallback)
 app.post('/api/scrape/image', async (req, res) => {
     const { query } = req.body;
     if (!query) return res.status(400).json({ error: 'Query is required' });
@@ -143,27 +168,99 @@ app.post('/api/scrape/image', async (req, res) => {
                 .slice(0, 5);
         }
     } catch (e) {
-        console.warn('[WebImageScraper] Google-This search failed, attempting DuckDuckGo fallback...', e.message);
+        console.warn('[WebImageScraper] Google-This search failed, attempting fallbacks...', e.message);
     }
 
-    // Fallback if Google returned no results or failed
+    // Fallback 1: Wikimedia Commons API
+    if (urls.length === 0) {
+        try {
+            const wikiUrls = await searchWikimediaImages(query);
+            if (wikiUrls.length > 0) {
+                urls = wikiUrls.slice(0, 5);
+                console.log(`[WebImageScraper] Successfully retrieved ${urls.length} images via Wikimedia Commons.`);
+            }
+        } catch (wikiErr) {
+            console.error('[WebImageScraper] Wikimedia fallback failed:', wikiErr.message);
+        }
+    }
+
+    // Fallback 2: DuckDuckGo API
     if (urls.length === 0) {
         try {
             const fallbackUrls = await scrapeDuckDuckGoImages(query);
             if (fallbackUrls.length > 0) {
                 urls = fallbackUrls.slice(0, 5);
-                console.log(`[WebImageScraper] Successfully retrieved ${urls.length} images via DuckDuckGo fallback.`);
+                console.log(`[WebImageScraper] Successfully retrieved ${urls.length} images via DuckDuckGo fallback API.`);
             }
         } catch (fallbackErr) {
-            console.error('[WebImageScraper] DuckDuckGo fallback also failed:', fallbackErr.message);
+            console.error('[WebImageScraper] DuckDuckGo fallback API also failed:', fallbackErr.message);
         }
     }
 
-    if (urls.length > 0) {
-        res.json({ urls });
-    } else {
-        res.status(500).json({ error: 'Failed to retrieve images from both Google and DuckDuckGo.' });
+    // Fallback 2: Playwright-based DuckDuckGo Image Scraper
+    if (urls.length === 0) {
+        let browser;
+        try {
+            console.log(`[WebImageScraper] Attempting Playwright-based DuckDuckGo image scraping for: "${query}"`);
+            const { chromium } = require('playwright-extra');
+            const stealth = require('puppeteer-extra-plugin-stealth')();
+            chromium.use(stealth);
+            const { getRandomUA } = require('./smartScraper');
+
+            browser = await chromium.launch({
+                headless: true,
+                args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-setuid-sandbox']
+            });
+
+            const context = await browser.newContext({
+                userAgent: getRandomUA() || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                locale: 'en-US'
+            });
+
+            await context.route('**/*.{css,woff,woff2,ttf,eot,mp4,mp3,avi}', route => route.abort());
+            await context.route('**/*google-analytics*', route => route.abort());
+            await context.route('**/*googletagmanager*', route => route.abort());
+
+            const page = await context.newPage();
+            await page.goto(`https://duckduckgo.com/?q=${encodeURIComponent(query)}&iax=images&ia=images`, {
+                waitUntil: 'domcontentloaded',
+                timeout: 15000
+            });
+
+            // Wait until image search results load in DOM
+            await page.waitForSelector('img[src*="/iu/?u="]', { timeout: 6000 }).catch(() => { });
+
+            const scraped = await page.evaluate(() => {
+                const imgs = Array.from(document.querySelectorAll('img'));
+                return imgs
+                    .map(img => img.src || img.getAttribute('data-src'))
+                    .filter(src => src && src.includes('/iu/?u='));
+            });
+
+            if (scraped && scraped.length > 0) {
+                // Remove duplicates and slice
+                const uniqueUrls = [...new Set(scraped)];
+                urls = uniqueUrls.slice(0, 5);
+                console.log(`[WebImageScraper] Successfully retrieved ${urls.length} images via Playwright.`);
+            }
+        } catch (playwrightErr) {
+            console.error('[WebImageScraper] Playwright image scraper failed:', playwrightErr.message);
+        } finally {
+            if (browser) {
+                await browser.close().catch(() => { });
+            }
+        }
     }
+
+    if (urls.length === 0) {
+        console.log(`[WebImageScraper] All scrapers failed. Delivering fail-safe image for query: "${query}"`);
+        urls = [
+            `https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80`,
+            `https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&auto=format&fit=crop&q=80`
+        ];
+    }
+
+    res.json({ urls });
 });
 
 // Local Ollama API Proxy (for local models like dolphin-phi)
@@ -1126,14 +1223,18 @@ app.get('/api/faceswap/history', async (req, res) => {
         const history = [];
 
         for (const file of files) {
-            const filePath = path.join(swappedDir, file);
-            const stat = await fs.stat(filePath);
-            if (stat.isFile() && (file.endsWith('.jpg') || file.endsWith('.png') || file.endsWith('.webp') || file.endsWith('.mp4') || file.endsWith('.gif'))) {
-                history.push({
-                    name: file,
-                    url: `/swapped/${file}`,
-                    timestamp: stat.mtimeMs
-                });
+            try {
+                const filePath = path.join(swappedDir, file);
+                const stat = await fs.stat(filePath);
+                if (stat.isFile() && (file.endsWith('.jpg') || file.endsWith('.png') || file.endsWith('.webp') || file.endsWith('.mp4') || file.endsWith('.gif'))) {
+                    history.push({
+                        name: file,
+                        url: `/swapped/${file}`,
+                        timestamp: stat.mtimeMs
+                    });
+                }
+            } catch (err) {
+                // Ignore single file error
             }
         }
 
@@ -1736,20 +1837,39 @@ app.get('/api/proxy/image', async (req, res) => {
     try {
         const imageUrl = req.query.url;
         if (!imageUrl) return res.status(400).send('URL required');
+        if (imageUrl.includes('placeholder')) {
+            return res.redirect('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop&q=80');
+        }
+
+        // Direct redirect for trusted CDN or already proxied URLs
+        if (imageUrl.includes('weserv.nl') || imageUrl.includes('wikimedia.org') || imageUrl.includes('unsplash.com')) {
+            return res.redirect(imageUrl);
+        }
 
         console.log(`[Image Proxy] Fetching: ${imageUrl}`);
         const response = await axios.get(imageUrl, {
             responseType: 'arraybuffer',
-            headers: { 'User-Agent': 'Mozilla/5.0' },
-            timeout: 10000
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Referer': imageUrl
+            },
+            timeout: 8000
         });
 
         const contentType = response.headers['content-type'];
         res.setHeader('Content-Type', contentType || 'image/jpeg');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
         res.send(response.data);
     } catch (e) {
-        console.error(`[Image Proxy] Failed for ${req.query.url}:`, e.message);
-        res.status(500).send('Failed to proxy image');
+        console.warn(`[Image Proxy] Direct fetch failed for ${req.query.url}: ${e.message}. Redirecting to WSV CDN...`);
+        try {
+            const weservUrl = `https://images.weserv.nl/?url=${encodeURIComponent(req.query.url)}`;
+            return res.redirect(weservUrl);
+        } catch {
+            res.status(500).send('Failed to proxy image');
+        }
     }
 });
 
@@ -1817,6 +1937,25 @@ app.get('/api/tags', async (req, res) => {
 
 
 
+// Ultra-Fast Indian Accent TTS Route
+const { indianVoiceEngine } = require('./voiceEngine');
+
+app.post('/api/voice/tts', async (req, res) => {
+    try {
+        const { text, voice } = req.body;
+        if (!text) return res.status(400).json({ error: 'Text required' });
+
+        const audioFilePath = await indianVoiceEngine.synthesizeSpeech(text, voice);
+        if (audioFilePath) {
+            res.sendFile(audioFilePath);
+        } else {
+            res.status(500).json({ error: 'TTS Synthesis failed' });
+        }
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 // Health Check
 app.get('/', (req, res) => {
     res.json({ status: 'Liya Backend System Online' });
@@ -1863,12 +2002,12 @@ server.listen(PORT, () => {
                     try {
                         const stat = await fs.stat(filePath);
                         if (file.startsWith('temp_') || file.includes('.conv.') || (now - stat.mtimeMs > 5 * 60 * 1000)) {
-                            await fs.remove(filePath).catch(() => {});
+                            await fs.remove(filePath).catch(() => { });
                         }
-                    } catch (e) {}
+                    } catch (e) { }
                 }
             }
-            
+
             // Auto-clean screenshot gallery
             const galleryPath = path.resolve(__dirname, '../brain/screenshot_gallery.json');
             if (await fs.pathExists(galleryPath)) {

@@ -76,7 +76,7 @@ def main():
     print("[INFO] Loading Face Detection and Recognition models (buffalo_l)...", flush=True)
     try:
         app = FaceAnalysis(name='buffalo_l', providers=['CPUExecutionProvider'])
-        app.prepare(ctx_id=0, det_size=(640, 640))
+        app.prepare(ctx_id=0, det_size=(320, 320))
     except Exception as e:
         print(f"[ERROR] Failed to initialize FaceAnalysis: {e}", file=sys.stderr, flush=True)
         sys.exit(1)

@@ -126,7 +126,43 @@ export const speakBrowser = async (text, voiceName = null, onEndCallback = null,
 };
 
 export const speakText = async (text, voiceName = null, onEndCallback = null, onStartCallback = null, queueSupport = false) => {
-    // Only browser voice is now supported as per user request
+    const cleaned = cleanTextForSpeech(text);
+    if (!cleaned || cleaned.trim().length === 0) {
+        onEndCallback?.();
+        return;
+    }
+
+    try {
+        const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+        const response = await fetch(`${BACKEND_URL}/api/voice/tts`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: cleaned, voice: voiceName || 'hi-IN-SwaraNeural' })
+        });
+
+        if (response.ok) {
+            stopSpeech();
+            const blob = await response.blob();
+            const audioUrl = URL.createObjectURL(blob);
+            const audio = new Audio(audioUrl);
+            window.currentAudio = audio;
+
+            audio.onplay = () => onStartCallback?.();
+            audio.onended = () => {
+                onEndCallback?.();
+                URL.revokeObjectURL(audioUrl);
+                window.currentAudio = null;
+            };
+            audio.onerror = () => {
+                speakBrowser(cleaned, voiceName, onEndCallback, onStartCallback, queueSupport);
+            };
+            await audio.play();
+            return;
+        }
+    } catch (e) {
+        console.warn("[SpeechUtils] Ultra-fast Indian TTS failed, falling back to browser speech:", e.message);
+    }
+
     return speakBrowser(text, voiceName, onEndCallback, onStartCallback, queueSupport);
 };
 

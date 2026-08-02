@@ -40,3 +40,9 @@ scratch/
 *.onnx
 *.zip
 face_swap_models_backup/
+__pycache__/
+*.pyc
+public/swapped/*
+!public/swapped/.gitkeep
+
+

@@ -40,7 +40,7 @@ const Message = ({ role, content, images, fileName, onSpeaking, isPicoMode }) =>
                 const safeUrl = rawUrl.replace(/\s+/g, '');
                 currentDirectImages.push({ url: safeUrl, caption: match[2].trim() });
             }
-            processedContent = processedContent.replace(imageRegex, '').trim();
+            processedContent = processedContent.replace(/\[\s*DIRECT_IMAGE:\s*([^|]+?)\s*\|\s*([^\]]+?)\s*\]/gi, '').trim();
             processedContent = processedContent.replace(/!\[.*?\]\(\s*\)/g, '').trim();
 
             const thinkRegex = /<think>([\s\S]*?)(?:<\/think>|$)/gi;
