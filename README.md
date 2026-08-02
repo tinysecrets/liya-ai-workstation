@@ -116,6 +116,30 @@ LIYA has a built-in agent ecosystem designed to coordinate, write code, run rese
 
 ## 📂 Installation & Setup (Hinglish Guide)
 
+### ⚠️ System Prerequisites (Jo automatically install nahi hote)
+Yeh external system software/tools `npm install` se automatically install **nahi** hote, inhein aapko apne computer par pehle se setup/install karna hoga:
+
+1. **🟢 Node.js (v18.x or v20+)**: 
+   - Backend Express server aur React 19 Frontend run karne ke liye.
+   - Verify: `node -v` & `npm -v`
+
+2. **🐍 Python (v3.10+ / v3.11 / v3.13)**: 
+   - FaceSwap & VideoSwap ONNX vision scripts (`faceswap.py`, `videoswap.py`) ke liye.
+   - Verify: `python --version`
+
+3. **🎬 FFmpeg**: 
+   - Video FaceSwap processing ke baad audio muxing aur fast H.264 / GIF encoding ke liye.
+   - `ffmpeg` executable system PATH / Environment Variables me added hona chahiye.
+   - Verify: `ffmpeg -version`
+
+4. **🐍 Python Pip Packages**: 
+   - FaceSwap Python libraries (`insightface`, `opencv-python`, `onnxruntime`, `numpy`, `pillow`) install karne ke liye execute karein:
+   ```bash
+   pip install -r backend/bin/requirements.txt
+   ```
+
+---
+
 ### Step 1: Clone & Environment Setup
 Copy `.env.example` to `.env`:
 ```bash
