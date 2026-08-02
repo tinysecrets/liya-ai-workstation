@@ -114,69 +114,80 @@ LIYA has a built-in agent ecosystem designed to coordinate, write code, run rese
 
 ---
 
-## 📂 Installation & Setup (Hinglish Guide)
+## 🚀 Quick Setup & Installation Guide
 
-### ⚠️ System Prerequisites (Jo automatically install nahi hote)
-Yeh external system software/tools `npm install` se automatically install **nahi** hote, inhein aapko apne computer par pehle se setup/install karna hoga:
-
-1. **🟢 Node.js (v18.x or v20+)**: 
-   - Backend Express server aur React 19 Frontend run karne ke liye.
-   - Verify: `node -v` & `npm -v`
-
-2. **🐍 Python (v3.10+ / v3.11 / v3.13)**: 
-   - FaceSwap & VideoSwap ONNX vision scripts (`faceswap.py`, `videoswap.py`) ke liye.
-   - Verify: `python --version`
-
-3. **🎬 FFmpeg**: 
-   - Video FaceSwap processing ke baad audio muxing aur fast H.264 / GIF encoding ke liye.
-   - `ffmpeg` executable system PATH / Environment Variables me added hona chahiye.
-   - Verify: `ffmpeg -version`
-
-4. **🐍 Python Pip Packages**: 
-   - FaceSwap Python libraries (`insightface`, `opencv-python`, `onnxruntime`, `numpy`, `pillow`) install karne ke liye execute karein:
-   ```bash
-   pip install -r backend/bin/requirements.txt
-   ```
+Follow these steps in order to get LIYA up and running on your machine:
 
 ---
 
-### Step 1: Clone & Environment Setup
-Copy `.env.example` to `.env`:
+### 📋 Prerequisites (External System Requirements)
+
+> [!IMPORTANT]
+> These global system tools must be installed on your machine manually before running LIYA:
+
+| Prerequisite | Version Required | Purpose | Verification Command |
+| :--- | :--- | :--- | :--- |
+| **🟢 Node.js** | `v18.x` or `v20+` | React 19 Frontend & Express Backend Runtime | `node -v` |
+| **🐍 Python** | `v3.10+` | Computer Vision & FaceSwap Pipelines | `python --version` |
+| **🎬 FFmpeg** | Latest (in PATH) | Video Swap Audio Muxing & Encoding | `ffmpeg -version` |
+
+---
+
+### 🛠️ Step-by-Step Installation
+
+#### Step 1: Environment Configuration
+Copy the sample environment file and configure your initial settings:
 ```bash
 cp .env.example .env
 ```
-Fill in your configuration in `.env` (or configure directly via **LIYA Console Settings** in the UI):
-- `VITE_OLLAMA_CLOUD_API_KEY`: Ollama Cloud API Key
-- `VITE_MEM0_API_KEY`: Mem0 Cloud API Key
-- `VITE_USER_NAME`: Master user name (default: Navraj)
+> [!TIP]
+> You can also configure API keys dynamically at runtime directly inside **LIYA Console Settings** in the UI!
 
-### Step 2: Install Dependencies
+#### Step 2: Install Python ML Dependencies
+Install required computer vision & face processing libraries:
 ```bash
-# Install frontend dependencies
+pip install -r backend/bin/requirements.txt
+```
+
+#### Step 3: Install Node.js Dependencies
+Install packages for both the Frontend Workstation and the Express Backend:
+```bash
+# 1. Frontend dependencies
 npm install
 
-# Install backend dependencies
+# 2. Backend dependencies
 npm install --prefix backend
 ```
 
-### Step 3: Install Playwright Browsers
+#### Step 4: Setup Stealth Browser Engine
+Install Chromium browser binaries for Playwright web crawling:
 ```bash
 npx playwright install chromium --with-deps
 ```
 
-### ⚡ Quick Start: 1-Click Automated Launcher (`Start_LIYA_AI.bat`)
-Windows users can launch the complete LIYA AI Workstation in a single click:
-- Simply double-click **`Start_LIYA_AI.bat`** in the project root folder.
-- It automatically initializes the **Express Backend Server** (`c:\liya\backend`), starts the **React Frontend Server** (`c:\liya`), waits for initialization, and launches `http://localhost:5173` directly in your default web browser!
+---
 
-### Step 4: Manual Command-Line Startup
-If starting manually via terminal:
+### ⚡ Launching LIYA Workstation
+
+#### Option A: 1-Click Windows Launcher (Recommended)
+Simply double-click the included batch launcher:
+```text
+Start_LIYA_AI.bat
+```
+*It will automatically spin up the Backend Server, start the Frontend Workstation, and launch `http://localhost:5173` in your default browser.*
+
+#### Option B: Manual Command-Line Startup
+Run the unified startup script from the root directory:
 ```bash
 npm start
 ```
-- **Frontend App**: `http://localhost:5173`
-- **Backend Server**: `http://localhost:3000`
+
+| Service | Local URL |
+| :--- | :--- |
+| **🖥️ Frontend Interface** | [http://localhost:5173](http://localhost:5173) |
+| **⚙️ Express Backend API** | [http://localhost:3000](http://localhost:3000) |
 
 ---
 
 *Developed with ❤️ for Navraj Singh | LIYA Neural OS v2.7.0*
+
