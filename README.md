@@ -27,10 +27,15 @@
 
 ## 📸 Interface Screenshots & Visual Gallery
 
+| Interactive Canvas Workstation (Active Card) | Live Canvas Interaction (Animated Demo) |
+| :---: | :---: |
+| ![LIYA Canvas YouTube Card](public/assets/liya_canvas_active_card.png) | ![LIYA Canvas Animation Demo](public/assets/liya_canvas_interactive_demo.webp) |
+| *Active YouTube Music & Media Card on Canvas* | *Live Canvas Split-Pane UI Walkthrough Animation* |
+
 | Main Desktop HUD | Mini Apps Suite Launcher |
 | :---: | :---: |
 | ![LIYA Main Dashboard](public/assets/liya_main_dashboard.png) | ![LIYA Mini Apps Modal](public/assets/liya_mini_apps.png) |
-| *Sci-Fi HUD Console & Interactive Canvas* | *Integrated Mini Apps Ecosystem* |
+| *Sci-Fi HUD Console & Split Canvas* | *Integrated Mini Apps Ecosystem* |
 
 | Console Settings & API Gateway |
 | :---: |
