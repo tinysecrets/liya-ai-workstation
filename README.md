@@ -1,6 +1,17 @@
 # 🌌 LIYA: Neural OS v2.7.0 (Agentic Desktop Workstation)
 
-**LIYA (Neural Intelligent Yield Assistant)** is a premium, autonomous, local-first AI workstation and digital companion. Tailored with a futuristic dark-mode sci-fi HUD aesthetic, LIYA functions as an agentic command center capable of web browsing, local system automation, high-speed face-swapping, Mem0 long-term memory, multi-agent coordination, and interactive canvas application rendering.
+> **LIYA (Neural Intelligent Yield Assistant)** is a premium, autonomous, local-first AI workstation, digital companion, and multi-agent command center. Built with a futuristic dark-mode sci-fi HUD aesthetic, LIYA empowers users with real-time web research, stealth Playwright scraping, sandboxed terminal automation, high-speed face swapping, Mem0 long-term vector memory, interactive Canvas application rendering, and an integrated suite of built-in Mini Apps.
+
+---
+
+### ✨ Key System Highlights
+- 🧠 **Mem0 Long-Term Vector Memory**: Cloud + Local memory sync for context-aware, personalized AI conversations.
+- 🎨 **Interactive Visual Canvas**: Live execution of React/HTML/JS web apps, particle animations, Recharts, maps, and YouTube music.
+- 🎭 **High-Speed Computer Vision**: Millisecond image & multi-threaded video face swapping (`inswapper_128.onnx`).
+- 🧩 **Built-in Mini Apps Suite**: Integrated Weather, News, Currency, System Telemetry, Scheduler, and Vision Scanner apps.
+- 🗣️ **Ultra-Fast Indian Accent TTS**: Real-time Hindi & Indian English neural speech synthesis (`hi-IN-SwaraNeural`).
+- 🕵️ **Stealth Browser & Deep Research**: Playwright stealth web crawler, single-link deep ingestion, and Google/Pexels image scraper.
+- 🤖 **Multi-Agent Orchestrator**: Subagent task delegation (`researcher`, `coder`, `executor`, `security_guard`) via a shared Blackboard.
 
 ---
 
