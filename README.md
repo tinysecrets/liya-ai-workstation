@@ -1,5 +1,7 @@
 # 🌌 LIYA: Neural OS v2.7.0 (Agentic Desktop Workstation)
 
+![LIYA AI Hero Banner](public/assets/liya_hero_banner.png)
+
 > **LIYA (Neural Intelligent Yield Assistant)** is a premium, autonomous, local-first AI workstation, digital companion, and multi-agent command center. Built with a futuristic dark-mode sci-fi HUD aesthetic, LIYA empowers users with real-time web research, stealth Playwright scraping, sandboxed terminal automation, high-speed face swapping, Mem0 long-term vector memory, interactive Canvas application rendering, and an integrated suite of built-in Mini Apps.
 
 ---
@@ -12,6 +14,20 @@
 - 🗣️ **Ultra-Fast Indian Accent TTS**: Real-time Hindi & Indian English neural speech synthesis (`hi-IN-SwaraNeural`).
 - 🕵️ **Stealth Browser & Deep Research**: Playwright stealth web crawler, single-link deep ingestion, and Google/Pexels image scraper.
 - 🤖 **Multi-Agent Orchestrator**: Subagent task delegation (`researcher`, `coder`, `executor`, `security_guard`) via a shared Blackboard.
+
+---
+
+## 📸 Interface Screenshots & Visual Gallery
+
+| Main Desktop HUD | Mini Apps Suite Launcher |
+| :---: | :---: |
+| ![LIYA Main Dashboard](public/assets/liya_main_dashboard.png) | ![LIYA Mini Apps Modal](public/assets/liya_mini_apps.png) |
+| *Sci-Fi HUD Console & Interactive Canvas* | *Integrated Mini Apps Ecosystem* |
+
+| Console Settings & API Gateway |
+| :---: |
+| ![LIYA Console Settings](public/assets/liya_settings.png) |
+| *API Keys & Model Routing Console* |
 
 ---
 
