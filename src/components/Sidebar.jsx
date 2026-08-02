@@ -227,13 +227,6 @@ const Sidebar = ({
                         {!isPicoMode && (
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-extrabold text-slate-900 truncate tracking-tight">LIYA AI</p>
-                                <p className="text-[11px] font-medium text-indigo-600 flex items-center gap-1.5">
-                                    <span className="relative flex h-2 w-2">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                    </span>
-                                    <span>Neural Core Active</span>
-                                </p>
                             </div>
                         )}
                     </button>
