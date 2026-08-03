@@ -175,7 +175,7 @@ Follow this detailed step-by-step guide to install and configure LIYA on any loc
 
 | Tool | Recommended Version | Download Link | Verification Command |
 | :--- | :--- | :--- | :--- |
-| **🟢 Node.js** | `v18.x` or `v20+` | [nodejs.org](https://nodejs.org/) | `node -v` & `npm -v` |
+| **🟢 Node.js** | `v20+` / `v22+ (LTS)` | [nodejs.org](https://nodejs.org/) | `node -v` & `npm -v` |
 | **🐍 Python** | `v3.10+` / `v3.11` / `v3.13` | [python.org](https://www.python.org/) | `python --version` & `pip --version` |
 | **🎬 FFmpeg** | Latest (added to PATH) | [ffmpeg.org](https://ffmpeg.org/) | `ffmpeg -version` |
 | **🐙 Git** | Latest | [git-scm.com](https://git-scm.com/) | `git --version` |
