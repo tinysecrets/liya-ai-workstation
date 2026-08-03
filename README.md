@@ -260,6 +260,7 @@ npm start
 
 ### 🔧 Troubleshooting & Tips
 
+- **Windows CMD Server Freezing (QuickEdit Mode)**: If the backend server or AI response appears paused after clicking inside the Command Prompt terminal window, press **`Enter`** or **`Esc`** to un-freeze execution. To permanently prevent CMD freezing on Windows, right-click the CMD title bar ➔ **Properties** ➔ uncheck **QuickEdit Mode** under Options tab.
 - **Port in Use Error**: If port `3000` or `5173` is busy, kill existing node processes using `taskkill /F /IM node.exe` (Windows) or `pkill -f node` (Linux/macOS).
 - **FFmpeg Not Found**: Ensure `ffmpeg` is added to your OS Environment Variables PATH so `videoswap.py` can render output audio tracks.
 - **Mem0 Cloud Connection**: If `VITE_MEM0_API_KEY` is not provided, LIYA gracefully operates in **Local Memory Fallback Mode** (`localStorage`).
