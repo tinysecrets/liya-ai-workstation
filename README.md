@@ -34,10 +34,10 @@
 
 ## 📸 Interface Screenshots & Visual Gallery
 
-| Interactive Canvas Workstation (Active Card) | Live Canvas Split-Pane Workstation |
+| Interactive Canvas Workstation (Active Card) | Canvas Telemetry & Subsystem Dashboard |
 | :---: | :---: |
-| ![LIYA Canvas YouTube Card](public/assets/liya_canvas_active_card.png) | ![LIYA Live Canvas Split View](public/assets/liya_canvas_live_interaction.png) |
-| *Active YouTube Music & Media Card on Canvas* | *Live Canvas Split-Pane Interface & HUD* |
+| ![LIYA Canvas YouTube Card](public/assets/liya_canvas_active_card.png) | ![LIYA Canvas Telemetry & Controls](public/assets/liya_canvas_telemetry.png) |
+| *Active YouTube Music & Media Card on Canvas* | *Holographic Volume, Telemetry & 1-Click Subsystem Controls* |
 
 | Main Desktop HUD | Mini Apps Suite Launcher |
 | :---: | :---: |
