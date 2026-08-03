@@ -27,7 +27,7 @@
 - 🎭 **Unfiltered Computer Vision & FaceSwap Engine**: 100% local, uncensored, zero-latency image & multi-threaded video face swapping (`inswapper_128.onnx` + `buffalo_l`). Zero cloud uploads, zero rate-limits, and maximum privacy.
 - 🧩 **Integrated Mini Apps Ecosystem**: Suite of specialized micro-applications (Weather Telemetry, Global News, Exchange Rates, System Monitoring, Task Scheduler, Camera Scanner).
 - 🗣️ **Hyper-Realistic Neural Voice**: Real-time Indian-accent speech synthesis (`hi-IN-SwaraNeural`) for fluid voice conversations.
-- 🕵️ **Stealth Browser & Deep Intelligence**: Autonomous Playwright browser crawler, single-link deep ingestion, and Google/Pexels media scraping.
+- 🕵️ **Single-Link Deep Ingestion & Visual Photo Scraper**: Paste any web URL to automatically ingest full-page text, generate structured deep summaries, and extract high-resolution photos rendered live on the Chat Feed & Interactive Canvas.
 - 🤖 **Autonomous Multi-Agent Orchestrator**: Coordinates specialized subagents (`coder`, `researcher`, `executor`, `security_guard`) through a shared state Blackboard.
 
 ---
