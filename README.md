@@ -24,7 +24,7 @@
 - 💖 **Empathetic Personal Companion & Supportive Presence**: LIYA is built not as a cold utility, but as a true **digital companion and supportive presence**. She understands your communication style, habits, and user intent, offering reliable human-like partnership and reassurance whenever you need it.
 - 🧠 **Mem0 Long-Term Cognitive Memory**: Retains facts, past conversations, and personal context across sessions (via Mem0 Cloud & Local Storage), building an evolving understanding of you over time.
 - 🎨 **Interactive Visual Canvas Workstation**: Renders live code execution, HTML/CSS/JS web applications, dynamic charts, geographical maps, and YouTube music directly inside the HUD.
-- 🎭 **High-Speed Computer Vision Engine**: Ultra-fast image and multi-threaded video face swapping (`inswapper_128.onnx`).
+- 🎭 **Unfiltered Computer Vision & FaceSwap Engine**: 100% local, uncensored, zero-latency image & multi-threaded video face swapping (`inswapper_128.onnx` + `buffalo_l`). Zero cloud uploads, zero rate-limits, and maximum privacy.
 - 🧩 **Integrated Mini Apps Ecosystem**: Suite of specialized micro-applications (Weather Telemetry, Global News, Exchange Rates, System Monitoring, Task Scheduler, Camera Scanner).
 - 🗣️ **Hyper-Realistic Neural Voice**: Real-time Indian-accent speech synthesis (`hi-IN-SwaraNeural`) for fluid voice conversations.
 - 🕵️ **Stealth Browser & Deep Intelligence**: Autonomous Playwright browser crawler, single-link deep ingestion, and Google/Pexels media scraping.
@@ -111,9 +111,10 @@ LIYA includes a dedicated **Interactive Canvas** (`Canvas.jsx`) for live visual 
 
 LIYA comes with a built-in suite of specialized **Mini Apps** accessible directly from the App Launcher modal (`AppLauncherModal.jsx`):
 
-1. **🎭 Face Swap & Video Swap**:
-   - **High-Speed Image Swap**: Swaps faces on target photos in milliseconds using optimized ONNX `buffalo_l` models.
-   - **Multi-Threaded Video Swap**: High-speed parallel video frame processing with `ThreadPoolExecutor` and FFmpeg ultrafast encoding.
+1. **🎭 Unfiltered Computer Vision & FaceSwap Engine (`faceswap.py` & `videoswap.py`)**:
+   - **100% Local & Uncensored**: Runs entirely on your local machine using ONNX `inswapper_128.onnx` and `buffalo_l` vision models. Zero cloud uploads, zero subscriptions, zero rate-limits, and zero censorship restrictions.
+   - **Millisecond Image FaceSwap**: Blazing-fast target photo face replacement in under 200ms.
+   - **Multi-Threaded Video FaceSwap**: High-speed parallel video frame extraction and swapping powered by Python `ThreadPoolExecutor` and `FFmpeg` ultrafast hardware encoding.
    - **Crop & History Manager**: Manage reference face crops and clean swap history with one click.
 2. **⛅ Weather Workstation** (`WeatherControl.jsx`): Live weather telemetry, temperature forecasts, humidity, and atmospheric data for global cities.
 3. **📰 News Intelligence Center** (`NewsControl.jsx`): Real-time global headlines, Google News RSS, Indian news feeds, and community reactions summarized in Hinglish.
