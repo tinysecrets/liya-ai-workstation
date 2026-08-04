@@ -1860,8 +1860,8 @@ app.get('/api/proxy/image', async (req, res) => {
             return res.redirect('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop&q=80');
         }
 
-        // Direct redirect for trusted CDN or already proxied URLs
-        if (imageUrl.includes('weserv.nl') || imageUrl.includes('wikimedia.org') || imageUrl.includes('unsplash.com')) {
+        // Direct redirect only for already proxied URLs
+        if (imageUrl.includes('weserv.nl')) {
             return res.redirect(imageUrl);
         }
 

@@ -389,8 +389,12 @@ export const planAndExecute = async (query, onChunk, options = {}) => {
         const syncResult = await tool.execute(selected.parameters, env);
 
         // INTERCEPT IMAGES: Check for custom [DIRECT_IMAGE:url|caption] tag
-        if (typeof syncResult === 'string' && syncResult.startsWith('[DIRECT_IMAGE:') && syncResult.endsWith(']')) {
-          directUIComponents.push(syncResult);
+        if (typeof syncResult === 'string' && syncResult.includes('[DIRECT_IMAGE:')) {
+          const imageRegex = /\[\s*DIRECT_IMAGE:\s*([^|]+?)\s*\|\s*([^\]]+?)\s*\]/gi;
+          let match;
+          while ((match = imageRegex.exec(syncResult)) !== null) {
+            directUIComponents.push(match[0]);
+          }
           executionResults.push(`[Tool: ${tool.name}] Image successfully found and shown to user.`);
         } else {
           executionResults.push(`[Tool: ${tool.name}] Result: ${syncResult}`);

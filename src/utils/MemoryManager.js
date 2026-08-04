@@ -215,19 +215,32 @@ class MemoryManager {
         const userId = config.getUserName() || "local_user";
         const mem0Client = this.getMem0Client();
 
+        const lowerQ = query.toLowerCase();
+        const isAboutUserQuery = /about me|apne baare|mere baare|who am i|mera naam|my info|my memory|kya jaante/i.test(lowerQ);
+        const searchQuery = isAboutUserQuery ? `${userId} ${query}` : query;
+
         if (mem0Client) {
             try {
-                console.log('[MemoryManager] Searching Mem0 Cloud memories:', query);
-                const response = await mem0Client.search(query, {
+                console.log('[MemoryManager] Searching Mem0 Cloud memories:', searchQuery);
+                let response = await mem0Client.search(searchQuery, {
                     filters: { user_id: userId },
                     topK: limit
                 });
 
-                const results = response?.results || (Array.isArray(response) ? response : []);
+                let results = response?.results || (Array.isArray(response) ? response : []);
+
+                // If broad 'about user' query returned no results from vector search, fallback to getAll()
+                if (results.length === 0 && isAboutUserQuery) {
+                    console.log('[MemoryManager] Broad user query returned 0 search results, fetching all memories...');
+                    const allMems = await mem0Client.getAll({ user_id: userId });
+                    results = allMems?.results || (Array.isArray(allMems) ? allMems : []);
+                }
+
                 if (results.length > 0) {
                     const formatted = results
                         .map(item => item.memory || item.content || item.text)
                         .filter(Boolean)
+                        .slice(0, limit)
                         .join('\n- ');
                     return formatted ? `- ${formatted}` : null;
                 }

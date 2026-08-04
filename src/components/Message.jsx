@@ -136,6 +136,12 @@ const Message = ({ role, content, images, fileName, onSpeaking, isPicoMode }) =>
                                                 className="max-w-full rounded-xl border border-gray-200 shadow-sm object-contain"
                                                 style={{ maxHeight: '400px' }}
                                                 referrerPolicy="no-referrer"
+                                                onError={(e) => {
+                                                    if (!e.target.dataset.fallback && img.url) {
+                                                        e.target.dataset.fallback = 'true';
+                                                        e.target.src = `https://images.weserv.nl/?url=${encodeURIComponent(img.url)}`;
+                                                    }
+                                                }}
                                             />
                                             <button
                                                 onClick={async (e) => {
@@ -172,7 +178,26 @@ const Message = ({ role, content, images, fileName, onSpeaking, isPicoMode }) =>
                                 <ReactMarkdown
                                     remarkPlugins={[remarkGfm]}
                                     components={{
-                                        img: (props) => <img {...props} alt="" className="max-w-full rounded-xl my-3 border border-gray-200 shadow-sm" style={{ maxHeight: '400px' }} referrerPolicy="no-referrer" />,
+                                        img: ({ node, src, alt, ...props }) => {
+                                            const isExternal = src && src.startsWith('http') && !src.includes('localhost') && !src.includes('127.0.0.1');
+                                            const displayUrl = isExternal ? `${API_BASE}/api/proxy/image?url=${encodeURIComponent(src)}` : src;
+                                            return (
+                                                <img
+                                                    {...props}
+                                                    src={displayUrl}
+                                                    alt={alt || ""}
+                                                    className="max-w-full rounded-xl my-3 border border-gray-200 shadow-sm object-contain"
+                                                    style={{ maxHeight: '400px' }}
+                                                    referrerPolicy="no-referrer"
+                                                    onError={(e) => {
+                                                        if (!e.target.dataset.fallback && src) {
+                                                            e.target.dataset.fallback = 'true';
+                                                            e.target.src = `https://images.weserv.nl/?url=${encodeURIComponent(src)}`;
+                                                        }
+                                                    }}
+                                                />
+                                            );
+                                        },
                                         table: (props) => <div className="overflow-x-auto my-4"><table {...props} className="w-full text-left border-collapse" /></div>,
                                         th: (props) => <th {...props} className="border-b border-gray-300 p-2 text-gray-700 font-semibold" />,
                                         td: (props) => <td {...props} className="border-b border-gray-200 p-2 text-gray-700" />
