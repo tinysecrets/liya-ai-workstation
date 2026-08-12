@@ -7,6 +7,8 @@
 [![Ollama Cloud](https://img.shields.io/badge/Ollama-Cloud_Routing-000000?style=for-the-badge)](https://ollama.com)
 [![License MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
+> **⭐ This is the Official Repository of LIYA AI Workstation by Navraj Singh Momi.**
+
 ![LIYA AI Hero Banner](public/assets/liya_hero_banner.png)
 
 > **LIYA (Neural Intelligent Yield Assistant)** is an empathetic, JARVIS-inspired AI workstation and digital companion engineered to deeply understand you, remember your personal preferences, and provide unwavering 24/7 support. More than a simple chatbot, LIYA is an intuitive presence—combining Mem0 long-term cognitive vector memory, an interactive visual Canvas, high-speed FaceSwap computer vision, multi-agent orchestration, and built-in Mini Apps to empower you in every task.
@@ -277,5 +279,5 @@ Creator & Lead Developer of Liya AI Workstation.
 
 [LinkedIn Profile](https://www.linkedin.com/in/navraj-singh-4656263b0/) | [Instagram Profile](https://instagram.com/navrajx_kamboz)
 
-*Developed with ❤️ by Navraj Singh | LIYA Neural OS v2.7.0*
+*Developed with ❤️ by Navraj Singh Momi | LIYA Neural OS v2.7.0*
 
