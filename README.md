@@ -267,5 +267,15 @@ npm start
 
 ---
 
+---
+
+## Author
+<img src="https://media.licdn.com/dms/image/v2/D5603AQEU5t5k9nL36Q/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1715424683070?e=1733356800&v=beta&t=O2DlyL0bQn_Ozv5q5V96k_tK1u3L2m2z_G4sPqD-u_A" width="150" alt="Developer of Liya AI Workstation - Navraj Singh Momi">
+
+*Navraj Singh Momi*  
+Creator & Lead Developer of Liya AI Workstation.
+
+[LinkedIn Profile](https://www.linkedin.com/in/navraj-singh-4656263b0/) | [Instagram Profile](https://instagram.com/navrajx_kamboz)
+
 *Developed with ❤️ for Navraj Singh | LIYA Neural OS v2.7.0*
 
