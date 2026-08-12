@@ -277,5 +277,5 @@ Creator & Lead Developer of Liya AI Workstation.
 
 [LinkedIn Profile](https://www.linkedin.com/in/navraj-singh-4656263b0/) | [Instagram Profile](https://instagram.com/navrajx_kamboz)
 
-*Developed with ❤️ for Navraj Singh | LIYA Neural OS v2.7.0*
+*Developed with ❤️ by Navraj Singh | LIYA Neural OS v2.7.0*
 
