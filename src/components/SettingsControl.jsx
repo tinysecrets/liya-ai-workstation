@@ -36,8 +36,8 @@ const SettingsControl = () => {
         // Load Models
         setModels({
             OLLAMA_FAST_MODEL: localStorage.getItem('OLLAMA_FAST_MODEL') || 'gpt-oss:20b-cloud',
-            OLLAMA_SMART_MODEL: localStorage.getItem('OLLAMA_SMART_MODEL') || 'gpt-oss:120b',
-            CODER_MODEL: localStorage.getItem('CODER_MODEL') || 'qwen3-coder:480b-cloud',
+            OLLAMA_SMART_MODEL: localStorage.getItem('OLLAMA_SMART_MODEL') || 'gpt-oss:120b-cloud',
+            CODER_MODEL: localStorage.getItem('CODER_MODEL') || 'gpt-oss:120b-cloud',
             OLLAMA_VISION_MODEL: localStorage.getItem('OLLAMA_VISION_MODEL') || 'minimax-m3'
         });
     }, []);

@@ -28,8 +28,8 @@ app.use(cors({
     credentials: true
 }));
 app.use(morgan('dev'));
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '500mb' }));
+app.use(express.urlencoded({ extended: true, limit: '500mb' }));
 app.use('/swapped', express.static(path.resolve(__dirname, '../public/swapped')));
 app.use(express.static(path.resolve(__dirname, '../public')));
 
@@ -120,6 +120,82 @@ async function scrapeDuckDuckGoImages(query) {
     }
 }
 
+// Helper: Bing Images Scraper (Unfiltered)
+async function scrapeBingImages(query) {
+    try {
+        const cheerio = require('cheerio');
+        // adlt=off disables safe search (unfiltered)
+        const url = `https://www.bing.com/images/search?q=${encodeURIComponent(query)}&form=HDRSC2&first=1&adlt=off`;
+        const res = await axios.get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.5.0.0 Safari/537.36'
+            }
+        });
+        
+        const $ = cheerio.load(res.data);
+        const images = [];
+        
+        $('a.iusc').each((i, el) => {
+            const m = $(el).attr('m');
+            if (m) {
+                try {
+                    const parsed = JSON.parse(m);
+                    if (parsed && parsed.murl) {
+                        images.push(parsed.murl);
+                    }
+                } catch(e) {}
+            }
+        });
+        
+        return images;
+    } catch (e) {
+        console.warn("[Bing Image Scraper] Failed:", e.message);
+        return [];
+    }
+}
+
+// Helper: Yandex Images Scraper (Unfiltered via Playwright)
+async function scrapeYandexImagesPlaywright(query) {
+    try {
+        const { chromium } = require('playwright-extra');
+        const stealth = require('puppeteer-extra-plugin-stealth')();
+        chromium.use(stealth);
+        
+        const browser = await chromium.launch({ headless: true });
+        const context = await browser.newContext();
+        const page = await context.newPage();
+        
+        const url = `https://yandex.com/images/search?text=${encodeURIComponent(query)}`;
+        
+        // Increase timeout and catch any goto timeouts so it doesn't fail the whole function
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(e => {
+            console.warn("[Yandex Scraper] Goto timeout/error (ignoring):", e.message);
+        });
+        
+        await page.waitForTimeout(3000); // Wait for dynamic load even if domcontentloaded failed
+        
+        const images = await page.evaluate(() => {
+            const results = [];
+            document.querySelectorAll('img.serp-item__thumb').forEach(img => {
+                if(img.src && img.src.startsWith('http')) results.push(img.src);
+            });
+            if(results.length === 0) {
+                document.querySelectorAll('img').forEach(img => {
+                    if(img.src && img.src.startsWith('http') && img.src.includes('images')) results.push(img.src);
+                });
+            }
+            return Array.from(new Set(results));
+        });
+        
+        await browser.close();
+        // Strip the blur and shower parameters to get completely unblurred images
+        return images.map(url => url.replace(/&(blur|shower)=\d+/g, ''));
+    } catch (e) {
+        console.warn("[Yandex Image Scraper] Failed:", e.message);
+        return [];
+    }
+}
+
 // Helper: Wikimedia Commons Image Search
 async function searchWikimediaImages(query) {
     try {
@@ -171,7 +247,35 @@ app.post('/api/scrape/image', async (req, res) => {
         console.warn('[WebImageScraper] Google-This search failed, attempting fallbacks...', e.message);
     }
 
-    // Fallback 1: Wikimedia Commons API
+    // Fallback 1: Yandex Images (Playwright - Truly Unfiltered)
+    if (urls.length === 0) {
+        try {
+            console.log('[WebImageScraper] Attempting Yandex Playwright fallback...');
+            const yandexUrls = await scrapeYandexImagesPlaywright(query);
+            if (yandexUrls.length > 0) {
+                urls = yandexUrls.slice(0, 5);
+                console.log(`[WebImageScraper] Successfully retrieved ${urls.length} images via Yandex Images.`);
+            }
+        } catch (yandexErr) {
+            console.error('[WebImageScraper] Yandex fallback failed:', yandexErr.message);
+        }
+    }
+
+    // Fallback 2: Bing Images (Unfiltered)
+    if (urls.length === 0) {
+        try {
+            console.log('[WebImageScraper] Attempting Bing fallback...');
+            const bingUrls = await scrapeBingImages(query);
+            if (bingUrls.length > 0) {
+                urls = bingUrls.slice(0, 5);
+                console.log(`[WebImageScraper] Successfully retrieved ${urls.length} images via Bing Images.`);
+            }
+        } catch (bingErr) {
+            console.error('[WebImageScraper] Bing fallback failed:', bingErr.message);
+        }
+    }
+
+    // Fallback 2: Wikimedia Commons API
     if (urls.length === 0) {
         try {
             const wikiUrls = await searchWikimediaImages(query);

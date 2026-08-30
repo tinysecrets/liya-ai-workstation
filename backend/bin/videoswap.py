@@ -96,25 +96,39 @@ def main():
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
+        print(f"\n=======================================================", flush=True)
+        print(f"   TARGET VIDEO LOADED SUCCESSFULLY! ", flush=True)
+        print(f"   TOTAL FRAMES IN THIS VIDEO: {total_frames}", flush=True)
+        print(f"=======================================================\n", flush=True)
         print(f"[INFO] Video Properties: {width}x{height} @ {fps:.2f} FPS. Total frames: {total_frames}", flush=True)
 
-        # Read first frame to extract reference target faces
-        ret, first_frame = cap.read()
-        if not ret:
-            print("[ERROR] Failed to read first frame of the video.", file=sys.stderr, flush=True)
-            cap.release()
-            sys.exit(1)
+        # Read frames to extract reference target faces
+        first_frame = None
+        first_frame_faces = None
+        max_scan_frames = 60
+        scanned_frames = 0
+        
+        print("[INFO] Scanning initial frames for reference faces...", flush=True)
+        while scanned_frames < max_scan_frames:
+            ret, frame = cap.read()
+            if not ret:
+                break
+                
+            scanned_frames += 1
+            faces = app.get(frame)
+            if faces:
+                first_frame_faces = faces
+                first_frame = frame
+                break
 
-        print("[INFO] Scanning first frame for reference faces...", flush=True)
-        first_frame_faces = app.get(first_frame)
         if not first_frame_faces:
-            print("[ERROR] No faces detected in the first frame of the video.", file=sys.stderr, flush=True)
+            print(f"[ERROR] No faces detected in the first {max_scan_frames} frames of the video.", file=sys.stderr, flush=True)
             cap.release()
             sys.exit(1)
 
         # Sort reference faces left-to-right (by x1 bounding box coordinate)
         first_frame_faces = sorted(first_frame_faces, key=lambda x: x.bbox[0])
-        print(f"[INFO] Found {len(first_frame_faces)} reference face(s) in first frame.", flush=True)
+        print(f"[INFO] Found {len(first_frame_faces)} reference face(s) in frame {scanned_frames}.", flush=True)
 
         # Parse mappings JSON
         mappings = None
@@ -220,8 +234,9 @@ def main():
 
             processed_frames_count += len(batch_frames)
             percent = min(100, (processed_frames_count * 100) // (total_frames if total_frames > 0 else 1))
-            print(f"[PROGRESS] Frame {processed_frames_count}/{total_frames} processed ({percent}%)", flush=True)
+            print(f"\r[PROGRESS] Processing... Frame {processed_frames_count}/{total_frames} ({percent}%) completed", end="", flush=True)
 
+        print() # Move to new line after loop finishes
         # Release resources
         cap.release()
         out.release()

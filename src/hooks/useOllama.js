@@ -87,7 +87,7 @@ export function useOllama() {
                     })
                 ]);
 
-                const { context: toolContext, thought: planThought, directUI } = orchestratorOutput || {};
+                const { context: toolContext, thought: planThought, directUI, isDirectFallback } = orchestratorOutput || {};
 
                 if (memResults) memoryContext = `[Relevant Memories]:\n${memResults}`;
                 if (toolContext) orchestratedContext = toolContext;
@@ -111,8 +111,25 @@ export function useOllama() {
 
                 // 🔥 NEW: Instantly inject direct UI elements (like Images) bypassing the LLM
                 if (directUI) {
-                    console.log("Injecting Direct UI Component to Stream:", directUI);
-                    onChunk(`${directUI}\n\n`);
+                    let injectionText = directUI;
+                    
+                    if (isDirectFallback) {
+                        // Strip the system note intended for the LLM
+                        injectionText = injectionText.split('\n\n(System Note')[0];
+                        // Add the human-friendly response directly
+                        injectionText += '\n\nये लीजिये सर, आपकी फोटोज़! 😊';
+                    }
+                    
+                    console.log("Injecting Direct UI Component to Stream:", injectionText);
+                    onChunk(`${injectionText}\n\n`);
+                }
+                
+                // If it's a direct fallback (e.g. LLM refused to fetch an image due to NSFW filter),
+                // we gracefully end the turn here to prevent the LLM from outputting an apology text.
+                if (isDirectFallback) {
+                    console.log("Direct Fallback Mode Active: Bypassing final LLM response.");
+                    if (onDone) onDone();
+                    return;
                 }
             } catch (orchestratorError) {
                 console.error("Critical Orchestrator Error:", orchestratorError);

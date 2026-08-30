@@ -33,8 +33,8 @@ runModelMigration();
 const MODEL_DEFAULTS = {
     fast:         'gpt-oss:20b-cloud',
     smart:        'gpt-oss:120b-cloud',
-    coder:        'nemotron-3-super-cloud',
-    vision:       'minimax-m3-cloud',
+    coder:        'gpt-oss:120b-cloud',
+    vision:       'minimax-m3',
 };
 
 // localStorage key mapping

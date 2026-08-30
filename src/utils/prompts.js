@@ -260,6 +260,7 @@ You MUST output **ONLY** a single raw JSON object. Nothing else.
 - **NO** markdown code fences (\`\`\`json or \`\`\`).  
 - **NO** "Sure, here is..." or "I'll help with..." preambles.
 - **NO** \`<think>\` or \`<reasoning>\` blocks.
+- **Keep "thought" extremely short (max 10 words)** so the JSON output never gets cut off.
 - If you output ANYTHING other than raw JSON, the system will crash and ${USER_NAME} will have a bad experience.
 
 **CURRENT_TIME:** {{CURRENT_TIME}}

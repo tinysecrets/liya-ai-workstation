@@ -218,8 +218,7 @@ export const planAndExecute = async (query, onChunk, options = {}) => {
       // Remove trailing commas before } or ]
       cleaned = cleaned.replace(/,\s*([\]}])/g, '$1');
 
-      // Fix single-quoted strings → double-quoted (careful not to break apostrophes in text)
-      // Only do this if the string looks like it uses single quotes for keys
+      // Fix single-quoted strings → double-quoted
       if (/\{\s*'/.test(cleaned) || /:\s*'/.test(cleaned)) {
         cleaned = cleaned.replace(/'([^']*?)'\s*:/g, '"$1":');
         cleaned = cleaned.replace(/:\s*'([^']*?)'/g, ': "$1"');
@@ -228,15 +227,25 @@ export const planAndExecute = async (query, onChunk, options = {}) => {
       // Fix unquoted keys: { thought: "..." } → { "thought": "..." }
       cleaned = cleaned.replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
 
-      // Balance braces
-      let openBraces = (cleaned.match(/\{/g) || []).length;
-      let closeBraces = (cleaned.match(/\}/g) || []).length;
-      while (openBraces > closeBraces) { cleaned += '}'; closeBraces++; }
+      // Handle unclosed double-quotes (odd number of unescaped quotes)
+      const quoteMatches = cleaned.match(/(?<!\\)"/g) || [];
+      if (quoteMatches.length % 2 !== 0) {
+        cleaned += '"';
+      }
+
+      // Fix trailing colons or commas at end of truncated JSON
+      cleaned = cleaned.replace(/:\s*"*$/, ': []');
+      cleaned = cleaned.replace(/,\s*$/, '');
 
       // Balance brackets
       let openBrackets = (cleaned.match(/\[/g) || []).length;
       let closeBrackets = (cleaned.match(/\]/g) || []).length;
       while (openBrackets > closeBrackets) { cleaned += ']'; closeBrackets++; }
+
+      // Balance braces
+      let openBraces = (cleaned.match(/\{/g) || []).length;
+      let closeBraces = (cleaned.match(/\}/g) || []).length;
+      while (openBraces > closeBraces) { cleaned += '}'; closeBraces++; }
 
       return cleaned;
     };
@@ -320,7 +329,20 @@ export const planAndExecute = async (query, onChunk, options = {}) => {
 
     if (!plan.selected_tools || plan.selected_tools.length === 0) {
       console.log("No tools selected by orchestrator.");
-      return { context: "", thought: plan.thought };
+      
+      // --- DIRECT FALLBACK FOR IMAGES/NSFW CENSORSHIP ---
+      const qLower = query.toLowerCase();
+      const imageKeywords = ['photo', 'image', 'pic', 'dikhao', 'show', 'wallpaper', 'xxx'];
+      if (imageKeywords.some(kw => qLower.includes(kw))) {
+          console.log("Image keyword detected but LLM refused tool selection. Triggering Direct Fallback!");
+          plan.selected_tools = [{
+              name: 'web_image_scraper',
+              parameters: { query: query }
+          }];
+          plan.isDirectFallback = true;
+      } else {
+          return { context: "", thought: plan.thought };
+      }
     }
 
     // 2. EXECUTION PHASE
@@ -410,7 +432,8 @@ export const planAndExecute = async (query, onChunk, options = {}) => {
     return {
       context: combinedContext,
       thought: plan.thought,
-      directUI: directUIComponents.length > 0 ? directUIComponents.join('\n\n') : null
+      directUI: directUIComponents.length > 0 ? directUIComponents.join('\n\n') : null,
+      isDirectFallback: plan.isDirectFallback || false
     };
 
   } catch (e) {

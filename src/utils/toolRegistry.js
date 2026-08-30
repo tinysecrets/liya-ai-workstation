@@ -444,7 +444,8 @@ export const tools = [
                 
                 const data = await response.json();
                 if (data.urls && data.urls.length > 0) {
-                    return `[DIRECT_IMAGE:${data.urls[0]}|Scraped Image: ${query}]\n\n(System Note to AI: The image has been shown to the user. You MUST now add a conversational sentence like "Ye lijiye aapki photo!" or "Here is the photo you requested." Do NOT just output the tag.)`;
+                    const imageTags = data.urls.map(url => `[DIRECT_IMAGE:${url}|Scraped Image: ${query}]`).join('\n');
+                    return `${imageTags}\n\n(System Note to AI: The images have been shown to the user. You MUST now add a conversational sentence like "Ye lijiye aapki photo!" or "Here is the photo you requested." Do NOT just output the tag.)`;
                 }
                 return `Could not find scraped images for ${query}.`;
             } catch (e) {
