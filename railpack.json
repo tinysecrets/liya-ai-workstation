@@ -1,0 +1,25 @@
+{
+  "$schema": "https://schema.railpack.com",
+  "provider": "node",
+  "packages": {
+    "node": "22"
+  },
+  "steps": {
+    "build": {
+      "commands": [
+        "npm ci --prefix backend",
+        "VITE_BACKEND_URL=\"${VITE_BACKEND_URL:-$RENDER_EXTERNAL_URL}\" npm run build"
+      ]
+    }
+  },
+  "deploy": {
+    "startCommand": "node backend/server.js",
+    "inputs": [
+      "...",
+      {
+        "step": "build",
+        "include": ["/app/backend/node_modules"]
+      }
+    ]
+  }
+}

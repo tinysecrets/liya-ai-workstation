@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: liya
+    runtime: node
+    plan: free
+    region: oregon
+    branch: main
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: RAILPACK_NODE_VERSION
+        value: "22"
+      - key: RAILPACK_NODE_PLAYWRIGHT_INSTALL
+        value: "1"
+      - key: NODE_ENV
+        value: production
+      - key: TZ
+        value: UTC
+      - key: VITE_BACKEND_URL
+        sync: false
+      - key: VITE_OLLAMA_CLOUD_API_KEY
+        sync: false
+      - key: VITE_MEM0_API_KEY
+        sync: false
+      - key: VITE_MEM0_API_URL
+        value: https://api.mem0.ai/v1

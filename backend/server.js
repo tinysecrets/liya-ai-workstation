@@ -22,6 +22,10 @@ const app = express();
 const server = http.createServer(app);
 const ALLOWED_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5174', 'http://127.0.0.1:5174', 'http://localhost:5175', 'http://127.0.0.1:5175'];
 
+// Allow the app's own public origin when deployed (Render injects RENDER_EXTERNAL_URL)
+const renderExternalUrl = (process.env.RENDER_EXTERNAL_URL || '').replace(/\/+$/, '');
+if (renderExternalUrl) ALLOWED_ORIGINS.push(renderExternalUrl);
+
 // --- MIDDLEWARE (Moved to top for all routes) ---
 app.use(cors({
     origin: ALLOWED_ORIGINS,
@@ -60,8 +64,8 @@ app.use((req, res, next) => {
 const io = new Server(server, {
     cors: {
         origin: (origin, callback) => {
-            // Reflect the origin if it's local
-            if (!origin || origin.includes('localhost') || origin.includes('127.0.0.1')) {
+            // Reflect the origin if it's allowed (local dev hosts or the deployed app origin)
+            if (!origin || ALLOWED_ORIGINS.includes(origin) || origin.includes('localhost') || origin.includes('127.0.0.1')) {
                 callback(null, true);
             } else {
                 callback(null, false);
@@ -2079,10 +2083,29 @@ app.post('/api/voice/tts', async (req, res) => {
     }
 });
 
-// Health Check
-app.get('/', (req, res) => {
-    res.json({ status: 'Liya Backend System Online' });
+// Health Check (used by Render / load balancers; always JSON, never serves the SPA)
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', service: 'Liya Backend System Online', uptime: process.uptime() });
 });
+
+// --- PRODUCTION: Serve the built Vite frontend (dist/) with SPA fallback ---
+const distDir = path.resolve(__dirname, '../dist');
+if (fs.existsSync(distDir)) {
+    app.use(express.static(distDir));
+
+    // SPA fallback: serve index.html for non-API, non-socket, non-file GET requests
+    app.use((req, res, next) => {
+        if (req.method === 'GET' && !req.path.startsWith('/api') && !req.path.startsWith('/socket.io') && !req.path.startsWith('/swapped') && !req.path.includes('.')) {
+            return res.sendFile(path.join(distDir, 'index.html'));
+        }
+        next();
+    });
+} else {
+    // No built frontend found (local dev / bare backend): keep a basic root health response
+    app.get('/', (req, res) => {
+        res.json({ status: 'Liya Backend System Online' });
+    });
+}
 
 // ⚡ CATCH-ALL 404 LOGGER (CRITICAL FOR DEBUGGING)
 app.use((req, res) => {
