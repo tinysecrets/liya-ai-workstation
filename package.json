@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:backend": "npm --prefix backend run dev",
-    "start": "C:\\PROGRA~1\\Cloudflare\\CLOUDF~1\\warp-cli.exe connect & concurrently \"npm run dev\" \"npm run dev:backend\"",
+    "start": "node backend/server.js",
     "stop": "C:\\PROGRA~1\\Cloudflare\\CLOUDF~1\\warp-cli.exe disconnect",
     "build": "vite build",
     "lint": "eslint .",
